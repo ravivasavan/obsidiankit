@@ -101,6 +101,7 @@ echo
 bold "Plan"
 echo "  Vault root:    $VAULT_ROOT"
 echo "  Command:       $COMMANDS_DIR/${COMMAND}.md  (lesson/decision/preference/reference/glossary as subcommands)"
+echo "  Vault cmds:    $VAULT_ROOT/.claude/commands/{ingest,inbox,ask,lint}.md"
 echo "  CLAUDE.md:     $CLAUDE_MD  (managed section between BEGIN/END markers)"
 echo "  Vault layout:  sources/projects, journal, inbox, wiki  (+ README.md at vault root)"
 echo
@@ -147,6 +148,14 @@ if [ ! -f "$src" ]; then
 fi
 substitute "$src" > "$dst"
 ok "wrote $dst"
+
+# Vault-scoped ops commands: live inside the vault repo so every
+# collaborator who clones the vault gets them.
+mkdir -p "$VAULT_ROOT/.claude/commands"
+for op in ingest inbox ask lint; do
+  substitute "$KIT_DIR/vault-commands/${op}.md" > "$VAULT_ROOT/.claude/commands/${op}.md"
+  ok "wrote $VAULT_ROOT/.claude/commands/${op}.md"
+done
 
 # ---------- 4. CLAUDE.md managed section ----------
 

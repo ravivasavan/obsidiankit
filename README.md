@@ -19,8 +19,9 @@ A one-shot installer that sets up:
    /obsidian                                # → category picker
    ```
 
-2. **A managed section in `~/.claude/CLAUDE.md`** so every Claude session — across every repo on your machine — knows the conventions: read `next.md` at session start, capture durable knowledge under the vault's `sources/` tree, link every entry from the top of `next.md`.
-3. **A vault folder skeleton** (`sources/`, `journal/`, `inbox/`, `wiki/`) plus a `README.md` at the vault root describing how it all fits together.
+2. **Four vault-ops commands inside the vault repo** — `<vault>/.claude/commands/{ingest,inbox,ask,lint}.md`. They live *in the vault* on purpose: anyone who clones a shared vault gets `/ingest` (compile sources into the wiki), `/inbox` (process captures), `/ask` (answer from the wiki, file the answer back), and `/lint` (wiki health check) with zero setup. Layer-aware: vaults without a `wiki/sources/` summary layer compile straight into concepts/entities.
+3. **A managed section in `~/.claude/CLAUDE.md`** so every Claude session — across every repo on your machine — knows the conventions: read `next.md` at session start, capture durable knowledge under the vault's `sources/` tree, link every entry from the top of `next.md`.
+4. **A vault folder skeleton** (`sources/`, `journal/`, `inbox/`, `wiki/`) plus a `README.md` at the vault root describing how it all fits together.
 
 The five categories don't overlap:
 
@@ -80,6 +81,7 @@ After installing, **start a fresh Claude Code session** (or run `/clear` in an e
 |---|---|
 | `<vault>/sources/projects/`, `journal/`, `inbox/`, `wiki/` | created with `mkdir -p` (idempotent) |
 | `<vault>/README.md` | written if missing, **not overwritten** |
+| `<vault>/.claude/commands/{ingest,inbox,ask,lint}.md` | written (overwritten on re-run) |
 | `~/.claude/commands/<command>.md` | written (overwritten on re-run) |
 | `~/.claude/CLAUDE.md` | managed section between BEGIN/END markers added or replaced; everything else untouched |
 
@@ -109,6 +111,7 @@ obsidiankit/
 ├── README.md            (this file)
 ├── install.sh           (the installer)
 ├── commands/obsidian.md (the dispatcher template with {{VAULT_ROOT}}/{{COMMAND}} placeholders)
+├── vault-commands/      (vault-scoped ops commands: ingest, inbox, ask, lint)
 ├── claude-md/snippet.md (the managed CLAUDE.md section)
 └── vault/README.md      (the vault-root onboarding doc)
 ```
