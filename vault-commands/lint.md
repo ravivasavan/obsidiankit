@@ -11,7 +11,7 @@ Run a read-mostly health check over `wiki/`. **Flag, don't fix.** The human deci
 3. **Missing sources** — any page with `author: agent` but no `sources:` entry, or with `sources:` pointing to a file that doesn't exist.
 4. **Stub pages** — agent-authored pages under 100 words. Suggest whether to expand, merge, or delete.
 5. **Near-duplicates** — concept/entity pages with overlapping content. Suggest merges; don't merge automatically.
-6. **Contradictions** — claims across pages that disagree. List the pages and the conflicting claims verbatim.
+6. **Contradictions** — claims across pages that disagree. Exception to flag-don't-fix (vault policy): resolve to the latest-dated source — update the older page with a dated supersession note citing both — and report what was resolved. If dating is genuinely ambiguous, flag instead.
 7. **New-article candidates** — concepts/entities mentioned across 3+ pages but without their own page.
 8. **Stale pages** — `updated` frontmatter older than 90 days on pages whose source files have changed.
 9. **Overview drift** — does `wiki/overview.md` still reflect the current wiki? Suggest specific edits (but don't apply — overview is sensitive).

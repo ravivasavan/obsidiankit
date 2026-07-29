@@ -15,6 +15,7 @@ Ingest raw source material into the wiki.
 - Never edit anything in `sources/`, `journal/`, or human-authored files in `inbox/`.
 - Every page you create must carry `author: agent` frontmatter and cite its sources in `sources:`.
 - Use Obsidian `[[wikilinks]]`, never relative paths.
+- When newly ingested material contradicts an existing wiki page, the **latest-dated knowledge wins**: update the older page to the newer claim and leave a dated supersession note citing both sources. Don't leave conflicts standing.
 
 **Procedure:**
 
