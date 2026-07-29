@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
-# obsikit installer
+# obsidiankit installer
 # Sets up Obsidian-vault knowledge-capture conventions for Claude Code:
-#   - 5 slash commands under ~/.claude/commands/<prefix>-{lesson,decision,preference,reference,glossary}.md
+#   - 1 dispatcher slash command at ~/.claude/commands/<command>.md (default: obsidian)
+#     covering lesson / decision / preference / reference / glossary
 #   - A managed section in ~/.claude/CLAUDE.md wiring the conventions globally
 #   - A vault folder skeleton (sources/, journal/, inbox/, wiki/) and onboarding README
 #
@@ -18,8 +19,8 @@ CLAUDE_DIR="${CLAUDE_DIR:-$HOME/.claude}"
 COMMANDS_DIR="$CLAUDE_DIR/commands"
 CLAUDE_MD="$CLAUDE_DIR/CLAUDE.md"
 
-MARKER_BEGIN="<!-- BEGIN obsikit managed section -->"
-MARKER_END="<!-- END obsikit managed section -->"
+MARKER_BEGIN="<!-- BEGIN obsidiankit managed section -->"
+MARKER_END="<!-- END obsidiankit managed section -->"
 
 # ---------- helpers ----------
 
@@ -40,12 +41,12 @@ abs_path() {
 }
 
 substitute() {
-  # Replace {{VAULT_ROOT}} and {{PREFIX}} in the file at $1, write to stdout.
+  # Replace {{VAULT_ROOT}} and {{COMMAND}} in the file at $1, write to stdout.
   # Uses awk + env vars (no sed delimiters to clash with paths).
-  VAULT_ROOT="$VAULT_ROOT" PREFIX="$PREFIX" awk '
+  VAULT_ROOT="$VAULT_ROOT" COMMAND="$COMMAND" awk '
     {
       gsub(/\{\{VAULT_ROOT\}\}/, ENVIRON["VAULT_ROOT"])
-      gsub(/\{\{PREFIX\}\}/,     ENVIRON["PREFIX"])
+      gsub(/\{\{COMMAND\}\}/,   ENVIRON["COMMAND"])
       print
     }
   ' "$1"
@@ -53,7 +54,7 @@ substitute() {
 
 # ---------- preflight ----------
 
-bold "obsikit installer"
+bold "obsidiankit installer"
 echo
 
 if [ ! -d "$CLAUDE_DIR" ]; then
@@ -64,13 +65,13 @@ fi
 
 # ---------- prompts ----------
 # Env-var overrides (useful for scripted installs / testing):
-#   OBSIKIT_VAULT    skip vault prompt
-#   OBSIKIT_PREFIX   skip prefix prompt
-#   OBSIKIT_YES=1    skip the final confirmation
+#   OBSIDIANKIT_VAULT    skip vault prompt
+#   OBSIDIANKIT_COMMAND  skip command-name prompt
+#   OBSIDIANKIT_YES=1    skip the final confirmation
 
 default_vault="$HOME/Obsidian"
-if [ -n "${OBSIKIT_VAULT:-}" ]; then
-  VAULT_INPUT="$OBSIKIT_VAULT"
+if [ -n "${OBSIDIANKIT_VAULT:-}" ]; then
+  VAULT_INPUT="$OBSIDIANKIT_VAULT"
 elif [ -t 0 ]; then
   read -r -p "Path to your Obsidian vault [$default_vault]: " VAULT_INPUT || VAULT_INPUT=""
 else
@@ -79,18 +80,18 @@ fi
 VAULT_INPUT="${VAULT_INPUT:-$default_vault}"
 VAULT_ROOT="$(abs_path "$VAULT_INPUT")"
 
-default_prefix="obsi"
-if [ -n "${OBSIKIT_PREFIX:-}" ]; then
-  PREFIX_INPUT="$OBSIKIT_PREFIX"
+default_command="obsidian"
+if [ -n "${OBSIDIANKIT_COMMAND:-}" ]; then
+  COMMAND_INPUT="$OBSIDIANKIT_COMMAND"
 elif [ -t 0 ]; then
-  read -r -p "Slash-command prefix [$default_prefix]: " PREFIX_INPUT || PREFIX_INPUT=""
+  read -r -p "Slash-command name [$default_command]: " COMMAND_INPUT || COMMAND_INPUT=""
 else
-  PREFIX_INPUT=""
+  COMMAND_INPUT=""
 fi
-PREFIX="${PREFIX_INPUT:-$default_prefix}"
+COMMAND="${COMMAND_INPUT:-$default_command}"
 
-if ! [[ "$PREFIX" =~ ^[a-z][a-z0-9-]*$ ]]; then
-  fail "prefix must be lowercase letters/digits/hyphens, starting with a letter"
+if ! [[ "$COMMAND" =~ ^[a-z][a-z0-9-]*$ ]]; then
+  fail "command name must be lowercase letters/digits/hyphens, starting with a letter"
   exit 1
 fi
 
@@ -99,12 +100,12 @@ fi
 echo
 bold "Plan"
 echo "  Vault root:    $VAULT_ROOT"
-echo "  Commands:      $COMMANDS_DIR/${PREFIX}-{lesson,decision,preference,reference,glossary}.md"
+echo "  Command:       $COMMANDS_DIR/${COMMAND}.md  (lesson/decision/preference/reference/glossary as subcommands)"
 echo "  CLAUDE.md:     $CLAUDE_MD  (managed section between BEGIN/END markers)"
 echo "  Vault layout:  sources/projects, journal, inbox, wiki  (+ README.md at vault root)"
 echo
 
-if [ "${OBSIKIT_YES:-0}" = "1" ]; then
+if [ "${OBSIDIANKIT_YES:-0}" = "1" ]; then
   confirm="y"
 elif [ -t 0 ]; then
   read -r -p "Proceed? [y/N] " confirm || confirm=""
@@ -138,16 +139,14 @@ fi
 echo
 bold "Installing slash commands"
 mkdir -p "$COMMANDS_DIR"
-for cat in lesson decision preference reference glossary; do
-  src="$KIT_DIR/commands/PREFIX-${cat}.md"
-  dst="$COMMANDS_DIR/${PREFIX}-${cat}.md"
-  if [ ! -f "$src" ]; then
-    fail "missing template: $src"
-    exit 1
-  fi
-  substitute "$src" > "$dst"
-  ok "wrote $dst"
-done
+src="$KIT_DIR/commands/obsidian.md"
+dst="$COMMANDS_DIR/${COMMAND}.md"
+if [ ! -f "$src" ]; then
+  fail "missing template: $src"
+  exit 1
+fi
+substitute "$src" > "$dst"
+ok "wrote $dst"
 
 # ---------- 4. CLAUDE.md managed section ----------
 
@@ -196,5 +195,5 @@ ok "managed section written to $CLAUDE_MD"
 
 echo
 bold "Done."
-dim "Open a fresh Claude Code session (or run /clear) and try:  /${PREFIX}-lesson"
+dim "Open a fresh Claude Code session (or run /clear) and try:  /${COMMAND} l my-first-lesson"
 dim "Vault README:  $vault_readme"

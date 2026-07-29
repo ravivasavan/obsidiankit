@@ -1,9 +1,9 @@
 # Obsidian vault — session continuity and knowledge capture
 
-This section is managed by obsikit. Re-running the installer will overwrite everything between the BEGIN/END markers.
+This section is managed by obsidiankit. Re-running the installer will overwrite everything between the BEGIN/END markers.
 
 Vault root: `{{VAULT_ROOT}}`
-Slash-command prefix: `{{PREFIX}}` (commands appear as `/{{PREFIX}}-lesson`, `/{{PREFIX}}-decision`, etc.)
+Slash command: `/{{COMMAND}}` — one dispatcher, five categories. First argument picks the category; single letters work (`/{{COMMAND}} l <slug>` = lesson, `d` decision, `p` preference, `r` reference, `g` glossary); bare `/{{COMMAND}}` asks which category fits.
 
 ## Session continuity — always use next.md in the Obsidian vault
 
@@ -55,15 +55,15 @@ The Obsidian vault is the long-term knowledge base. Don't bury durable knowledge
 
 ### Categories — when to use which
 
-Each category has a dedicated slash command under the `/{{PREFIX}}-` namespace. They don't overlap; pick the one that matches the *kind* of knowledge:
+Each category is a subcommand of `/{{COMMAND}}`. They don't overlap; pick the one that matches the *kind* of knowledge:
 
 | Command | Folder | Use for |
 |---|---|---|
-| `/{{PREFIX}}-lesson` | `lessons/` | Postmortems, gotchas, bugs that bit us. Non-obvious behaviors we'd re-learn the hard way. Always include `#postmortem`. |
-| `/{{PREFIX}}-decision` | `decisions/` | Architectural / design / vendor / scope decisions. ADR-style. Use when picking between approaches and the *rationale* matters. |
-| `/{{PREFIX}}-preference` | `preferences/` | How the user likes things done. Working style, opinions, conventions. **Dual-writes to Claude memory** so Claude follows it next session. |
-| `/{{PREFIX}}-reference` | `references/` | Pointers to external resources — dashboards, sibling repos, people, vendors, tools, Slack channels. *Where to look.* |
-| `/{{PREFIX}}-glossary` | `glossary/` | Project vocabulary, acronyms, domain terms, standards. *What a term means.* |
+| `/{{COMMAND}} lesson` | `lessons/` | Postmortems, gotchas, bugs that bit us. Non-obvious behaviors we'd re-learn the hard way. Always include `#postmortem`. |
+| `/{{COMMAND}} decision` | `decisions/` | Architectural / design / vendor / scope decisions. ADR-style. Use when picking between approaches and the *rationale* matters. |
+| `/{{COMMAND}} preference` | `preferences/` | How the user likes things done. Working style, opinions, conventions. **Dual-writes to Claude memory** so Claude follows it next session. |
+| `/{{COMMAND}} reference` | `references/` | Pointers to external resources — dashboards, sibling repos, people, vendors, tools, Slack channels. *Where to look.* |
+| `/{{COMMAND}} glossary` | `glossary/` | Project vocabulary, acronyms, domain terms, standards. *What a term means.* |
 
 If a session's knowledge doesn't fit any of these cleanly, write it as a `lesson` (the most flexible category) or ask the user.
 

@@ -27,7 +27,7 @@ This file lives at the vault root. Open the vault in Obsidian to get full graph-
 
 **Why two top-level trees?**
 
-- `sources/` is the human-write input layer. Anything durable goes here — content meant to be searched, linked to, and ingested by downstream tooling later. Tagged notes from the `/{{PREFIX}}-*` commands all land under `sources/projects/<project>/<category>/`.
+- `sources/` is the human-write input layer. Anything durable goes here — content meant to be searched, linked to, and ingested by downstream tooling later. Tagged notes from the `/{{COMMAND}}` command all land under `sources/projects/<project>/<category>/`.
 - `journal/` is the human-write session-state zone. `next.md` lives here. It's deliberately excluded from any downstream "ingest the vault" tooling so that ephemeral working notes don't pollute the knowledge layer.
 
 `inbox/` and `wiki/` are optional — keep them empty if not in use. They're conventional landing zones if you later add inbox-processing or wiki-generation tooling.
@@ -40,11 +40,11 @@ When something worth remembering surfaces in a Claude session, invoke one of:
 
 | Command | Use it when… |
 |---|---|
-| `/{{PREFIX}}-lesson` | A bug, gotcha, or non-obvious behavior surprised you. The going-forward rule is the point. |
-| `/{{PREFIX}}-decision` | You chose between real alternatives and the *rationale* will matter again. |
-| `/{{PREFIX}}-preference` | You corrected Claude's approach and want it to stick across future sessions. Dual-writes to Claude memory. |
-| `/{{PREFIX}}-reference` | You named an external resource — a dashboard, a person, a sibling repo, a vendor — that's worth knowing how to find. |
-| `/{{PREFIX}}-glossary` | A project-specific term, acronym, or domain concept needs a one-place definition. |
+| `/{{COMMAND}} lesson` | A bug, gotcha, or non-obvious behavior surprised you. The going-forward rule is the point. |
+| `/{{COMMAND}} decision` | You chose between real alternatives and the *rationale* will matter again. |
+| `/{{COMMAND}} preference` | You corrected Claude's approach and want it to stick across future sessions. Dual-writes to Claude memory. |
+| `/{{COMMAND}} reference` | You named an external resource — a dashboard, a person, a sibling repo, a vendor — that's worth knowing how to find. |
+| `/{{COMMAND}} glossary` | A project-specific term, acronym, or domain concept needs a one-place definition. |
 
 Each command:
 1. Writes a structured, tagged markdown note to the right `sources/projects/<project>/<category>/` folder.
@@ -117,4 +117,4 @@ The bar is: *would future-me, or a teammate ramping into this project, save time
 
 ## Setup origin
 
-This vault structure and the `/{{PREFIX}}-*` commands were installed by **obsikit** — see the kit's README for re-install / update instructions. The CLAUDE.md section that wires these conventions into every Claude session lives at `~/.claude/CLAUDE.md` under a managed section delimited by `<!-- BEGIN obsikit managed section -->` markers.
+This vault structure and the `/{{COMMAND}}` command were installed by **obsidiankit** — see the kit's README for re-install / update instructions. The CLAUDE.md section that wires these conventions into every Claude session lives at `~/.claude/CLAUDE.md` under a managed section delimited by `<!-- BEGIN obsidiankit managed section -->` markers.

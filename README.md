@@ -1,24 +1,40 @@
-# obsikit
+# obsidiankit
 
 A small Claude Code package for capturing durable project knowledge — postmortems, decisions, working-style preferences, external references, and glossary terms — into an Obsidian vault, structured so each entry is **discoverable from both Obsidian** (graph view, tag search) **and the project's current state file** (`next.md`).
+
+> Renamed from **obsikit** on 2026-07-29, and restructured from five `/<prefix>-*` commands into one `/obsidian` dispatcher. Migrating: re-run `./install.sh`, then delete the old `~/.claude/commands/<prefix>-{lesson,decision,preference,reference,glossary}.md` files.
 
 ## What it is
 
 A one-shot installer that sets up:
 
-1. **Five slash commands** in `~/.claude/commands/` — `/<prefix>-lesson`, `/<prefix>-decision`, `/<prefix>-preference`, `/<prefix>-reference`, `/<prefix>-glossary`. Invoke any of them inside a Claude Code session to capture the conversation's takeaway as a structured, tagged markdown note in the right vault folder, with a wikilink added to the project's `next.md`.
-2. **A managed section in `~/.claude/CLAUDE.md`** so every Claude session — across every repo on your machine — knows the conventions: read `next.md` at session start, capture durable knowledge under `sources/projects/<project>/<category>/`, link every entry from the top of `next.md`.
+1. **One dispatcher slash command** in `~/.claude/commands/` — `/obsidian` (name configurable). First argument picks the category, the rest is the slug or term. Single letters work; a bare invocation asks which category fits:
+
+   ```
+   /obsidian lesson pnpm-blocks-postinstall
+   /obsidian l pnpm-blocks-postinstall      # same thing
+   /obsidian d cardpager-v2                 # decision
+   /obsidian p                              # preference, slug derived
+   /obsidian g CR80                         # glossary (term required)
+   /obsidian                                # → category picker
+   ```
+
+2. **A managed section in `~/.claude/CLAUDE.md`** so every Claude session — across every repo on your machine — knows the conventions: read `next.md` at session start, capture durable knowledge under the vault's `sources/` tree, link every entry from the top of `next.md`.
 3. **A vault folder skeleton** (`sources/`, `journal/`, `inbox/`, `wiki/`) plus a `README.md` at the vault root describing how it all fits together.
 
 The five categories don't overlap:
 
-| Command | Folder | Use for |
+| Subcommand | Folder | Use for |
 |---|---|---|
-| `/<prefix>-lesson` | `lessons/` | Postmortems, gotchas, bugs that bit you |
-| `/<prefix>-decision` | `decisions/` | ADR-style architectural / design / scope decisions |
-| `/<prefix>-preference` | `preferences/` | How you like things done (dual-writes to Claude memory) |
-| `/<prefix>-reference` | `references/` | Dashboards, sibling repos, people, vendors — *where to look* |
-| `/<prefix>-glossary` | `glossary/` | Project vocabulary, acronyms, domain terms — *what a term means* |
+| `/obsidian l[esson]` | `lessons/` | Postmortems, gotchas, bugs that bit you |
+| `/obsidian d[ecision]` | `decisions/` | ADR-style architectural / design / scope decisions |
+| `/obsidian p[reference]` | `preferences/` | How you like things done (dual-writes to Claude memory) |
+| `/obsidian r[eference]` | `references/` | Dashboards, sibling repos, people, vendors — *where to look* |
+| `/obsidian g[lossary]` | `glossary/` | Project vocabulary, acronyms, domain terms — *what a term means* |
+
+## Multi-vault setups
+
+The command is registry-aware: if your `~/.claude/CLAUDE.md` defines a vault registry (e.g. shared team vaults alongside a personal vault, routed at write time), `/obsidian` resolves the target vault first — explicit instruction > repo declaration > pattern match > ask — and uses the single-project layout (`sources/<category>/`, `journal/next.md`) inside team vaults. Without a registry, everything lands in the single vault you configure at install time.
 
 ## Why
 
@@ -37,22 +53,24 @@ Long-running projects accumulate non-obvious knowledge — a gotcha you hit at 2
 ## Install
 
 ```sh
-git clone https://github.com/ravivasavan/obsikit.git ~/Projects/obsikit
-cd ~/Projects/obsikit
+git clone https://github.com/ravivasavan/obsidiankit.git ~/Projects/obsidiankit
+cd ~/Projects/obsidiankit
 ./install.sh
 ```
 
 The installer prompts for two things:
 
 1. **Path to your Obsidian vault** — where the folder skeleton + README go, and where all captured notes will live. Default: `~/Obsidian`.
-2. **Slash-command prefix** — what to call the commands. Default: `obsi` (giving you `/obsi-lesson`, `/obsi-decision`, etc.). Pick anything kebab-safe — `kb`, `vault`, your initials, whatever.
+2. **Slash-command name** — what to call the dispatcher. Default: `obsidian`. Pick anything kebab-safe.
 
 It then:
 
 1. Creates the vault folder skeleton (`sources/projects/`, `journal/`, `inbox/`, `wiki/`) at the path you gave.
 2. Drops `README.md` at the vault root (skipped if one already exists — your customisations are safe).
-3. Writes the five slash-command files to `~/.claude/commands/<prefix>-*.md` with your vault path templated in.
-4. Adds (or replaces) a managed section in `~/.claude/CLAUDE.md` between `<!-- BEGIN obsikit managed section -->` markers. Re-runs are safe — the old section is stripped before the new one is written.
+3. Writes the dispatcher command file to `~/.claude/commands/<command>.md` with your vault path templated in.
+4. Adds (or replaces) a managed section in `~/.claude/CLAUDE.md` between `<!-- BEGIN obsidiankit managed section -->` markers. Re-runs are safe — the old section is stripped before the new one is written.
+
+Scripted installs: `OBSIDIANKIT_VAULT=… OBSIDIANKIT_COMMAND=… OBSIDIANKIT_YES=1 ./install.sh`
 
 After installing, **start a fresh Claude Code session** (or run `/clear` in an existing one) so the updated CLAUDE.md is picked up.
 
@@ -62,22 +80,20 @@ After installing, **start a fresh Claude Code session** (or run `/clear` in an e
 |---|---|
 | `<vault>/sources/projects/`, `journal/`, `inbox/`, `wiki/` | created with `mkdir -p` (idempotent) |
 | `<vault>/README.md` | written if missing, **not overwritten** |
-| `~/.claude/commands/<prefix>-{lesson,decision,preference,reference,glossary}.md` | written (overwritten on re-run) |
+| `~/.claude/commands/<command>.md` | written (overwritten on re-run) |
 | `~/.claude/CLAUDE.md` | managed section between BEGIN/END markers added or replaced; everything else untouched |
 
 Nothing else on your machine is modified.
 
 ## Re-installing / updating
 
-`git pull` the repo and re-run `./install.sh`. Use the same prefix and vault path as last time and the installer will cleanly replace the managed CLAUDE.md section and overwrite the slash-command files. Your vault contents — including the README and every note you've captured — are untouched.
+`git pull` the repo and re-run `./install.sh`. Use the same command name and vault path as last time and the installer will cleanly replace the managed CLAUDE.md section and overwrite the command file. Your vault contents — including the README and every note you've captured — are untouched.
 
 ## Uninstalling
 
-The installer doesn't ship an uninstall script (yet). To remove obsikit manually:
-
 ```sh
-# 1. Remove the slash commands
-rm ~/.claude/commands/<prefix>-{lesson,decision,preference,reference,glossary}.md
+# 1. Remove the dispatcher command
+rm ~/.claude/commands/<command>.md
 
 # 2. Remove the managed section from CLAUDE.md
 #    (delete everything between the BEGIN/END markers, inclusive)
@@ -86,27 +102,13 @@ $EDITOR ~/.claude/CLAUDE.md
 
 Your vault and the notes inside it stay put.
 
-## Usage
-
-After install, every Claude Code session will read `<vault>/journal/<project>/next.md` on startup and treat the conventions as global. To capture something:
-
-```
-/<prefix>-lesson           # derives a slug from the conversation
-/<prefix>-lesson my-slug   # explicit kebab slug
-/<prefix>-glossary CR80    # term is required for glossary
-```
-
-Each command writes the note to the right folder and adds a one-line wikilink at the top of the project's `next.md`. The category section in `next.md` is created lazily — only when it has entries.
-
-For the full convention guide, see `<vault>/README.md` once installed, or `vault/README.md` in this repo.
-
 ## Layout of this repo
 
 ```
-obsikit/
+obsidiankit/
 ├── README.md            (this file)
 ├── install.sh           (the installer)
-├── commands/            (slash-command templates with {{VAULT_ROOT}}/{{PREFIX}} placeholders)
+├── commands/obsidian.md (the dispatcher template with {{VAULT_ROOT}}/{{COMMAND}} placeholders)
 ├── claude-md/snippet.md (the managed CLAUDE.md section)
 └── vault/README.md      (the vault-root onboarding doc)
 ```
