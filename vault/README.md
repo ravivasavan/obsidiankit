@@ -1,6 +1,6 @@
-# Vault — Claude Code knowledge base
+# Vault — coding-agent knowledge base
 
-This vault is the long-term knowledge base for work assisted by Claude Code. It's structured so that *durable* knowledge (lessons, decisions, preferences, references, glossary) stays browsable in Obsidian *and* discoverable from each project's current state file. Session scratch lives separately so it can be archived without losing anything important.
+This vault is the long-term knowledge base for work assisted by CLI coding agents (Claude Code, Codex, Gemini CLI, or any agent that reads `AGENTS.md`). It's structured so that *durable* knowledge (lessons, decisions, preferences, references, glossary) stays browsable in Obsidian *and* discoverable from each project's current state file. Session scratch lives separately so it can be archived without losing anything important.
 
 This file lives at the vault root. Open the vault in Obsidian to get full graph-view + tag-search benefits.
 
@@ -36,13 +36,13 @@ This file lives at the vault root. Open the vault in Obsidian to get full graph-
 
 ## The five capture commands
 
-When something worth remembering surfaces in a Claude session, invoke one of:
+When something worth remembering surfaces in an agent session, invoke one of:
 
 | Command | Use it when… |
 |---|---|
 | `/{{COMMAND}} lesson` | A bug, gotcha, or non-obvious behavior surprised you. The going-forward rule is the point. |
 | `/{{COMMAND}} decision` | You chose between real alternatives and the *rationale* will matter again. |
-| `/{{COMMAND}} preference` | You corrected Claude's approach and want it to stick across future sessions. Dual-writes to Claude memory. |
+| `/{{COMMAND}} preference` | You corrected the agent's approach and want it to stick across future sessions. Dual-writes to the agent's memory. |
 | `/{{COMMAND}} reference` | You named an external resource — a dashboard, a person, a sibling repo, a vendor — that's worth knowing how to find. |
 | `/{{COMMAND}} glossary` | A project-specific term, acronym, or domain concept needs a one-place definition. |
 
@@ -50,13 +50,13 @@ Each command:
 1. Writes a structured, tagged markdown note to the right `sources/projects/<project>/<category>/` folder.
 2. Adds a bare-slug `[[wikilink]]` line at the top of the project's `next.md` so the entry is discoverable both via Obsidian tag search and from the project's session-state file.
 
-The command files themselves live in `~/.claude/commands/` — open them to read the exact frontmatter schema each note uses.
+The dispatcher file lives at `{{DISPATCHER}}` (mirrored into each agent's slash-command directory) — open it to read the exact frontmatter schema each note uses.
 
 ---
 
 ## How `next.md` works
 
-Every project gets one `next.md` at `{{VAULT_ROOT}}/journal/<project>/next.md`. Claude reads it at session start and updates it through the session.
+Every project gets one `next.md` at `{{VAULT_ROOT}}/journal/<project>/next.md`. The agent reads it at session start and updates it through the session.
 
 Structure (free-form, but conventional):
 
@@ -117,4 +117,4 @@ The bar is: *would future-me, or a teammate ramping into this project, save time
 
 ## Setup origin
 
-This vault structure and the `/{{COMMAND}}` command were installed by **obsidiankit** — see the kit's README for re-install / update instructions. The CLAUDE.md section that wires these conventions into every Claude session lives at `~/.claude/CLAUDE.md` under a managed section delimited by `<!-- BEGIN obsidiankit managed section -->` markers.
+This vault structure and the `/{{COMMAND}}` command were installed by **obsidiankit** — see the kit's README for re-install / update instructions. The instructions that wire these conventions into every agent session live in your agent's global instructions file (`~/.claude/CLAUDE.md`, `~/.codex/AGENTS.md`, `~/.gemini/GEMINI.md`, or `~/AGENTS.md`) under a managed section delimited by `<!-- BEGIN obsidiankit managed section -->` markers.

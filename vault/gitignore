@@ -1,0 +1,10 @@
+# Obsidian per-device state — never commit these
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+.obsidian/workspaces.json
+.obsidian/cache
+.trash/
+
+# OS noise
+.DS_Store
+Thumbs.db

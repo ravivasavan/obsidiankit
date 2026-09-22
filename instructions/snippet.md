@@ -1,9 +1,10 @@
 # Obsidian vault — session continuity and knowledge capture
 
-This section is managed by obsidiankit. Re-running the installer will overwrite everything between the BEGIN/END markers.
+This section is managed by obsidiankit and is agent-agnostic (Claude Code, Codex, Gemini CLI, or any CLI agent). Re-running the installer will overwrite everything between the BEGIN/END markers.
 
 Vault root: `{{VAULT_ROOT}}`
 Slash command: `/{{COMMAND}}` — one dispatcher, five categories. First argument picks the category; single letters work (`/{{COMMAND}} l <slug>` = lesson, `d` decision, `p` preference, `r` reference, `g` glossary); bare `/{{COMMAND}}` asks which category fits.
+Full procedure: `{{DISPATCHER}}`. If this agent has no slash-command mechanism, treat a user message starting with `/{{COMMAND}}` as an instruction to read that file and follow it.
 
 ## Session continuity — always use next.md in the Obsidian vault
 
@@ -61,7 +62,7 @@ Each category is a subcommand of `/{{COMMAND}}`. They don't overlap; pick the on
 |---|---|---|
 | `/{{COMMAND}} lesson` | `lessons/` | Postmortems, gotchas, bugs that bit us. Non-obvious behaviors we'd re-learn the hard way. Always include `#postmortem`. |
 | `/{{COMMAND}} decision` | `decisions/` | Architectural / design / vendor / scope decisions. ADR-style. Use when picking between approaches and the *rationale* matters. |
-| `/{{COMMAND}} preference` | `preferences/` | How the user likes things done. Working style, opinions, conventions. **Dual-writes to Claude memory** so Claude follows it next session. |
+| `/{{COMMAND}} preference` | `preferences/` | How the user likes things done. Working style, opinions, conventions. **Dual-writes to the agent's persistent memory** (Claude Code: its project memory directory; other agents: their equivalent, or this instructions file) so it sticks next session. |
 | `/{{COMMAND}} reference` | `references/` | Pointers to external resources — dashboards, sibling repos, people, vendors, tools, Slack channels. *Where to look.* |
 | `/{{COMMAND}} glossary` | `glossary/` | Project vocabulary, acronyms, domain terms, standards. *What a term means.* |
 
@@ -73,7 +74,7 @@ All notes follow these rules:
 
 **Filename:** `{{VAULT_ROOT}}/sources/projects/<project>/<folder>/<slug>.md` where `<folder>` is the category folder above. Notes live under `sources/` (the human-write input tree) on purpose: anything in there can be picked up by downstream vault tooling (search, ingestion, etc.) that should ignore session scratch. Most categories prefix the slug with the date (`YYYY-MM-DD-<slug>`) for chronological ordering; glossary entries use just the term-derived slug (timeless).
 
-**Frontmatter:** Always YAML, always tagged. Tags drive Obsidian search — pick semantic ones, use hierarchical `area/subarea` syntax where it helps (`api/auth`, `git/safety`, `external/vendor`). Each command's `.md` file in `~/.claude/commands/` spells out the exact frontmatter fields for that category.
+**Frontmatter:** Always YAML, always tagged. Tags drive Obsidian search — pick semantic ones, use hierarchical `area/subarea` syntax where it helps (`api/auth`, `git/safety`, `external/vendor`). The dispatcher file (`{{DISPATCHER}}`) spells out the exact frontmatter fields for each category.
 
 **Wikilinks:** Use Obsidian `[[wikilinks]]` (not markdown links) so they survive renames and show up as graph nodes. Cross-reference related notes via the `related:` frontmatter field. In `next.md`, use **bare-slug** wikilinks (e.g. `[[2026-05-19-postgres-connection-pool-exhausted]]`) — no folder prefix — because the category folder is not a sibling of `next.md` (next.md lives in `journal/`, category notes in `sources/projects/...`). Obsidian resolves by basename, and date-prefixed slugs are unique enough.
 

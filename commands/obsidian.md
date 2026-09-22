@@ -22,7 +22,7 @@ Capture the conversation's durable takeaway as a structured, tagged note in the 
 
 ## Step 1 — Resolve the vault and project
 
-If `~/.claude/CLAUDE.md` defines a **vault registry** (multi-vault setup), resolve the target vault by its rules first — explicit user instruction > repo `CLAUDE.md` declaration > pattern match > ask. Team vaults are typically single-project: notes go to `<vault>/sources/<category-folder>/` and `next.md` is `<vault>/journal/next.md`; `git pull` before writing, push at session wrap.
+If your global agent instructions (`~/.claude/CLAUDE.md`, `~/.codex/AGENTS.md`, `~/.gemini/GEMINI.md`, or `~/AGENTS.md`) define a **vault registry** (multi-vault setup), resolve the target vault by its rules first — explicit user instruction > repo `CLAUDE.md` declaration > pattern match > ask. Team vaults are typically single-project: notes go to `<vault>/sources/<category-folder>/` and `next.md` is `<vault>/journal/next.md`; `git pull` before writing, push at session wrap.
 
 Otherwise (single-vault setup), the vault root is `{{VAULT_ROOT}}` and paths follow the multi-project form below.
 
@@ -131,7 +131,7 @@ When does this kick in? What does it look like in practice?
 The edge cases. Every preference has limits.
 ```
 
-**Dual-write to Claude memory:** project scope → `~/.claude/projects/<encoded-cwd>/memory/feedback_<slug>.md` (`type: feedback` frontmatter; add a line to `MEMORY.md`); global scope → a new absolute, unambiguous section in `~/.claude/CLAUDE.md`. Never `#postmortem` — preferences are forward-looking. Check for conflicting existing preferences first; update rather than contradict.
+**Dual-write to agent memory:** Claude Code, project scope → `~/.claude/projects/<encoded-cwd>/memory/feedback_<slug>.md` (`type: feedback` frontmatter; add a line to `MEMORY.md`); global scope → a new absolute, unambiguous section in `~/.claude/CLAUDE.md`. Other agents → their own persistent-memory mechanism if one exists, otherwise a new section in the global instructions file the agent reads (`~/.codex/AGENTS.md`, `~/.gemini/GEMINI.md`, `~/AGENTS.md`). Never `#postmortem` — preferences are forward-looking. Check for conflicting existing preferences first; update rather than contradict.
 
 ### reference (`references/`)
 
