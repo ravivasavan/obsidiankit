@@ -153,7 +153,8 @@ Then the handoff, short and imperative:
    - `~/Projects/<Org>/<org>-obsidian` (Recommended) — *Beside that team's code; matches the convention the kit author uses.*
    - Next to your personal vault — *`<personal-vault-parent>/<org>-obsidian`.*
    - Other → type a path.
-3. **Clone** and **verify** the layout: `sources/`, `journal/`, `.claude/commands/` should exist. If `.claude/commands/` is missing, say the vault predates the kit's vault-ops commands and offer to copy `vault-commands/*.md` from this repo into it (a commit for the team to review, not a silent push).
+3. **Clone, never copy.** If the target path already exists, run `~/.config/obsidiankit/vault-doctor.sh <path> <org>/<repo>` (or `scripts/vault-doctor.sh` from this repo if the kit isn't installed yet). If it passes, the clone is already there; skip to step 4. If it fails, **don't clone over it and don't merge into it**: say the folder is a copy rather than a clone, offer to rename it to `<path>.pre-clone-<date>`, then clone fresh and help them move any genuinely local-only work across as a normal commit. Never create a shared vault by copying, syncing (Dropbox, iCloud, Google Drive) or unzipping someone else's folder.
+   Then `git clone <url> <path>` and run the doctor again. It must pass before you go on. Then **verify** the layout: `sources/`, `journal/`, `.claude/commands/` should exist. If `.claude/commands/` is missing, say the vault predates the kit's vault-ops commands and offer to copy `vault-commands/*.md` from this repo into it (a commit for the team to review, not a silent push).
 4. **Read** the vault's own `CLAUDE.md` and `README.md` and summarise the team's conventions in three to five lines: what belongs in this vault, what stays personal, any naming rules.
 5. **Registry row.** Print this and offer to append it to the global instructions file (`~/.claude/CLAUDE.md`, or the agent's equivalent) under a `## Vault registry` heading placed **outside** the obsidiankit managed markers (create the heading and the table header on first use; add a row on later uses):
 
@@ -164,7 +165,7 @@ Then the handoff, short and imperative:
    ```
 
    Then state the routing rule they now need, in one sentence each: an explicit instruction wins; else a repo's own `CLAUDE.md` declaring `vault: <name>`; else project names matching `<name>*` route here; else the personal vault. And the ownership test: *who has to re-learn this if it is lost?* The team → this vault; only you → personal.
-6. **Handoff:** `git pull` at every session start in this vault, `git push` at wrap; never compile one vault's wiki from another's sources; cross-vault mentions are name-only links.
+6. **Handoff:** every session in this vault starts with the doctor (the managed section tells the agent to run it) and `git pull`, and ends with `git push`. If a pull or push ever fails, that's a stop-and-fix, not something to work around; never compile one vault's wiki from another's sources; cross-vault mentions are name-only links.
 
 ---
 
