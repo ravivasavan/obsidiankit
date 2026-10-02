@@ -10,6 +10,8 @@
 #   - A managed section (between BEGIN/END markers) in every global instructions
 #     file that exists: ~/.claude/CLAUDE.md, ~/.codex/AGENTS.md, ~/.gemini/GEMINI.md,
 #     ~/AGENTS.md. If none exist, ~/AGENTS.md is created.
+#   - ~/.config/obsidiankit/vault-doctor.sh, which agents run at session start
+#     to confirm a git-synced vault is a real clone of the right remote
 #   - A vault folder skeleton (sources/, journal/, inbox/, wiki/), onboarding README,
 #     and a .gitignore that keeps Obsidian's per-device workspace files out of git
 #
@@ -170,6 +172,7 @@ echo
 bold "Plan"
 echo "  Vault root:    $VAULT_ROOT"
 echo "  Dispatcher:    $CONFIG_DIR/${COMMAND}.md  (canonical; lesson/decision/preference/reference/glossary)"
+echo "  Vault check:   $CONFIG_DIR/vault-doctor.sh  (is a shared vault a real, current clone?)"
 for d in "${COMMAND_DIRS[@]:-}"; do [ -n "$d" ] && echo "  Command copy:  $d/${COMMAND}.md"; done
 for f in "${INSTRUCTION_FILES[@]}"; do echo "  Instructions:  $f  (managed section between BEGIN/END markers)"; done
 echo "  Vault cmds:    $VAULT_ROOT/.claude/commands/{ingest,inbox,ask,lint}.md"
@@ -231,6 +234,11 @@ fi
 mkdir -p "$CONFIG_DIR"
 substitute "$src" > "$CONFIG_DIR/${COMMAND}.md"
 ok "wrote $CONFIG_DIR/${COMMAND}.md"
+
+# Shared-vault health check, called at session start for git-synced vaults.
+cp "$KIT_DIR/scripts/vault-doctor.sh" "$CONFIG_DIR/vault-doctor.sh"
+chmod +x "$CONFIG_DIR/vault-doctor.sh"
+ok "wrote $CONFIG_DIR/vault-doctor.sh"
 
 # Per-agent slash-command copies.
 for d in "${COMMAND_DIRS[@]:-}"; do

@@ -22,6 +22,7 @@ The vault is the single source of truth. `next.md` lives in the Obsidian vault u
 3. If not, check whether the basename clearly maps to an existing vault project (e.g. `my-app-mobile` → `my-app/`). If ambiguous, ask the user which vault project this session belongs to before creating anything new.
 
 At the **start** of every session:
+- **Git-synced vaults first.** If the vault you're about to use syncs through git (any shared vault in the Vault registry, or any vault whose own `CLAUDE.md` says to pull at session start), run `~/.config/obsidiankit/vault-doctor.sh <vault-path> <owner>/<repo>` before reading anything. If it exits non-zero, **stop and tell the user what it printed.** Don't read or write a vault that isn't a clone of the right remote, and never work around it by copying files in. If it warns that it couldn't reach the remote or that the clone is behind, say so in your first message, then `git pull` (and report a failed pull loudly rather than carrying on).
 - Read `{{VAULT_ROOT}}/journal/<project>/next.md`.
 - If the folder or file doesn't exist (and the project is unambiguous), create them automatically. Don't ask first.
 - Briefly acknowledge what's there (current focus, next steps, open questions) so the user knows you've loaded it.

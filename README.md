@@ -37,7 +37,8 @@ A one-shot installer that sets up:
 
 2. **Four vault-ops commands inside the vault repo** — `<vault>/.claude/commands/{ingest,inbox,ask,lint}.md`. They live *in the vault* on purpose: anyone who clones a shared vault gets `/ingest` (compile sources into the wiki), `/inbox` (process captures), `/ask` (answer from the wiki, file the answer back), and `/lint` (wiki health check) with zero setup. Layer-aware: vaults without a `wiki/sources/` summary layer compile straight into concepts/entities.
 3. **A managed section in every global agent-instructions file you have** — `~/.claude/CLAUDE.md`, `~/.codex/AGENTS.md`, `~/.gemini/GEMINI.md`, `~/AGENTS.md` (created if none exist) — so every agent session, across every repo on your machine, knows the conventions: read `next.md` at session start, capture durable knowledge under the vault's `sources/` tree, link every entry from the top of `next.md`.
-4. **A vault folder skeleton** (`sources/`, `journal/`, `inbox/`, `wiki/`) plus a `README.md` at the vault root describing how it all fits together.
+4. **A shared-vault check** — `~/.config/obsidiankit/vault-doctor.sh <vault> <owner>/<repo>`. The managed section tells agents to run it at the start of every session in a git-synced vault. It stops the session if the folder isn't a real clone of the right remote (for example, a teammate's vault that was copied or synced instead of cloned, where pull and push quietly fail), and warns if the clone is behind, offline, or sitting inside a cloud-sync folder.
+5. **A vault folder skeleton** (`sources/`, `journal/`, `inbox/`, `wiki/`) plus a `README.md` at the vault root describing how it all fits together.
 
 The five categories don't overlap:
 
@@ -102,6 +103,7 @@ After installing, **start a fresh agent session** (Claude Code: `/clear` also wo
 | `<vault>/.gitignore` | written if missing (excludes Obsidian per-device workspace files), **not overwritten** |
 | `<vault>/.claude/commands/{ingest,inbox,ask,lint}.md` | written (overwritten on re-run) |
 | `~/.config/obsidiankit/<command>.md` | written (overwritten on re-run) — canonical, agent-neutral |
+| `~/.config/obsidiankit/vault-doctor.sh` | written (overwritten on re-run) — shared-vault clone check |
 | `~/.claude/commands/<command>.md` | written if `~/.claude/` exists (overwritten on re-run) |
 | `~/.codex/prompts/<command>.md` | written if `~/.codex/` exists (overwritten on re-run) |
 | `~/.claude/CLAUDE.md`, `~/.codex/AGENTS.md`, `~/.gemini/GEMINI.md`, `~/AGENTS.md` | for each that exists: managed section between BEGIN/END markers added or replaced; everything else untouched. `~/AGENTS.md` is created only if no other target exists. |
